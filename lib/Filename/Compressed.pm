@@ -1,7 +1,7 @@
 package Filename::Compressed;
 
 our $DATE = '2014-12-30'; # DATE
-our $VERSION = '0.01'; # VERSION
+our $VERSION = '0.02'; # VERSION
 
 use 5.010001;
 use strict;
@@ -17,6 +17,47 @@ our %SUFFIXES = (
     '.gz'  => {name=>'Gzip'},
     '.bz2' => {name=>'Bzip2'},
     '.xz'  => {name=>'XZ'},
+);
+
+our %COMPRESSORS = (
+    NCompress => {
+        # all programs mentioned here must accept filename(s) as arguments.
+        # preferably CLI.
+        compressor_programs => [
+            {name => 'compress', opts => ''},
+        ],
+        decompressor_programs => [
+            {name => 'uncompress', opts => ''},
+        ],
+    },
+    Gzip => {
+        compressor_programs => [
+            {name => 'gzip', opts => ''},
+        ],
+        decompressor_programs => [
+            {name => 'gzip', opts => '-d'},
+            {name => 'gunzip', opts => ''},
+        ],
+    },
+    Bzip2 => {
+        compressor_programs => [
+            {name => 'bzip2', opts => ''},
+        ],
+        decompressor_programs => [
+            {name => 'bzip2', opts => '-d'},
+            {name => 'bunzip2', opts => ''},
+        ],
+    },
+    XZ => {
+        compressor_programs => [
+            {name => 'xz', opts => ''},
+        ],
+        decompressor_programs => [
+            {name => 'xz', opts => '-d'},
+            {name => 'unxz', opts => ''},
+        ],
+    },
+
 );
 
 our %SPEC;
@@ -80,7 +121,7 @@ Filename::Compressed - Check whether filename indicates being compressed
 
 =head1 VERSION
 
-This document describes version 0.01 of Filename::Compressed (from Perl distribution Filename-Compressed), released on 2015-12-30.
+This document describes version 0.02 of Filename::Compressed (from Perl distribution Filename-Compressed), released on 2015-12-30.
 
 =head1 SYNOPSIS
 
