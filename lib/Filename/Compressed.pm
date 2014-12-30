@@ -1,0 +1,155 @@
+package Filename::Compressed;
+
+our $DATE = '2014-12-30'; # DATE
+our $VERSION = '0.01'; # VERSION
+
+use 5.010001;
+use strict;
+use warnings;
+
+require Exporter;
+our @ISA       = qw(Exporter);
+our @EXPORT_OK = qw(check_compressed_filename);
+#list_compressor_suffixes
+
+our %SUFFIXES = (
+    '.Z'   => {name=>'NCompress'},
+    '.gz'  => {name=>'Gzip'},
+    '.bz2' => {name=>'Bzip2'},
+    '.xz'  => {name=>'XZ'},
+);
+
+our %SPEC;
+
+$SPEC{check_compressed_filename} = {
+    v => 1.1,
+    summary => 'Check whether filename indicates being compressed',
+    description => <<'_',
+
+
+_
+    args => {
+        filename => {
+            schema => 'str*',
+            req => 1,
+            pos => 0,
+        },
+        # recurse?
+        # ci?
+    },
+    result_naked => 1,
+    result => {
+        schema => ['any*', of=>['bool*', 'hash*']],
+        description => <<'_',
+
+Return false if no compressor suffixes detected. Otherwise return a hash of
+information, which contains these keys: `compressor_name`, `compressor_suffix`,
+`uncompressed_filename`.
+
+_
+    },
+};
+sub check_compressed_filename {
+    my %args = @_;
+
+    my $filename = $args{filename};
+    $filename =~ /(\.\w+)\z/ or return 0;
+    my $suffix = $1;
+    my $spec = $SUFFIXES{$1} or return 0;
+    (my $ufilename = $filename) =~ s/\.\w+\z//;
+
+    return {
+        compressor_name       => $spec->{name},
+        compressor_suffix     => $suffix,
+        uncompressed_filename => $ufilename,
+    };
+}
+
+1;
+# ABSTRACT: Check whether filename indicates being compressed
+
+__END__
+
+=pod
+
+=encoding UTF-8
+
+=head1 NAME
+
+Filename::Compressed - Check whether filename indicates being compressed
+
+=head1 VERSION
+
+This document describes version 0.01 of Filename::Compressed (from Perl distribution Filename-Compressed), released on 2015-12-30.
+
+=head1 SYNOPSIS
+
+ use Filename::Compressed qw(check_compressed_filename);
+ my $res = check_compressed_filename(filename => "foo.txt.gz");
+ if ($res) {
+     printf "File is compressed with %s, uncompressed name: %s\n",
+         $res->{compressor_name},
+         $res->{uncompressed_filename};
+ } else {
+     print "File is not compressed\n";
+ }
+
+=head1 DESCRIPTION
+
+=head1 FUNCTIONS
+
+
+=head2 check_compressed_filename(%args) -> bool|hash
+
+Check whether filename indicates being compressed.
+
+Arguments ('*' denotes required arguments):
+
+=over 4
+
+=item * B<filename>* => I<str>
+
+=back
+
+Return value:
+
+ (any)
+
+Return false if no compressor suffixes detected. Otherwise return a hash of
+information, which contains these keys: C<compressor_name>, C<compressor_suffix>,
+C<uncompressed_filename>.
+
+=head1 TODO
+
+=head1 SEE ALSO
+
+L<Filename::Archive>
+
+=head1 HOMEPAGE
+
+Please visit the project's homepage at L<https://metacpan.org/release/Filename-Compressed>.
+
+=head1 SOURCE
+
+Source repository is at L<https://github.com/perlancar/perl-Filename-Compressed>.
+
+=head1 BUGS
+
+Please report any bugs or feature requests on the bugtracker website L<https://rt.cpan.org/Public/Dist/Display.html?Name=Filename-Compressed>
+
+When submitting a bug or request, please include a test-file or a
+patch to an existing test-file that illustrates the bug or desired
+feature.
+
+=head1 AUTHOR
+
+perlancar <perlancar@cpan.org>
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is copyright (c) 2014 by perlancar@cpan.org.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
+
+=cut
