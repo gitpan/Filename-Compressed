@@ -10,7 +10,7 @@
    ],
    "meta-spec" : {
       "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
-      "version" : 2
+      "version" : "2"
    },
    "name" : "Filename-Compressed",
    "prereqs" : {
@@ -55,10 +55,10 @@
          "web" : "https://github.com/perlancar/perl-Filename-Compressed"
       }
    },
-   "version" : "0.02",
+   "version" : "0.03",
    "x_Dist_Zilla" : {
       "perl" : {
-         "version" : "5.018002"
+         "version" : "5.018001"
       },
       "plugins" : [
          {

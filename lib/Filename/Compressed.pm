@@ -1,7 +1,7 @@
 package Filename::Compressed;
 
-our $DATE = '2014-12-30'; # DATE
-our $VERSION = '0.02'; # VERSION
+our $DATE = '2015-01-01'; # DATE
+our $VERSION = '0.03'; # VERSION
 
 use 5.010001;
 use strict;
@@ -76,7 +76,11 @@ _
             pos => 0,
         },
         # recurse?
-        # ci?
+        ci => {
+            summary => 'Whether to match case-insensitively',
+            schema  => 'bool',
+            default => 1,
+        },
     },
     result_naked => 1,
     result => {
@@ -95,8 +99,24 @@ sub check_compressed_filename {
 
     my $filename = $args{filename};
     $filename =~ /(\.\w+)\z/ or return 0;
+    my $ci = $args{ci} // 1;
+
     my $suffix = $1;
-    my $spec = $SUFFIXES{$1} or return 0;
+
+    my $spec;
+    if ($ci) {
+        my $suffix_lc = lc($suffix);
+        for (keys %SUFFIXES) {
+            if (lc($_) eq $suffix_lc) {
+                $spec = $SUFFIXES{$_};
+                last;
+            }
+        }
+    } else {
+        $spec = $SUFFIXES{$suffix};
+    }
+    return 0 unless $spec;
+
     (my $ufilename = $filename) =~ s/\.\w+\z//;
 
     return {
@@ -121,7 +141,7 @@ Filename::Compressed - Check whether filename indicates being compressed
 
 =head1 VERSION
 
-This document describes version 0.02 of Filename::Compressed (from Perl distribution Filename-Compressed), released on 2015-12-30.
+This document describes version 0.03 of Filename::Compressed (from Perl distribution Filename-Compressed), released on 2015-01-01.
 
 =head1 SYNOPSIS
 
@@ -147,6 +167,10 @@ Check whether filename indicates being compressed.
 Arguments ('*' denotes required arguments):
 
 =over 4
+
+=item * B<ci> => I<bool> (default: 1)
+
+Whether to match case-insensitively.
 
 =item * B<filename>* => I<str>
 
@@ -188,7 +212,7 @@ perlancar <perlancar@cpan.org>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2014 by perlancar@cpan.org.
+This software is copyright (c) 2015 by perlancar@cpan.org.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
